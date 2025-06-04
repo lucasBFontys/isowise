@@ -1,5 +1,6 @@
 import LoginStyleButton from '@/components/LoginStyleButton';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function Dashboard() {
   return (
@@ -8,19 +9,22 @@ export default function Dashboard() {
       <Image src="/images/curl.png" alt="curl" fill priority className="fixed inset-0 w-full h-full object-cover z-0 pointer-events-none select-none" />
 
       {/* Trofee knop rechts, net boven het midden en strak tegen de zijkant */}
-      <button
+      <Link
+        href="/leaderboard"
         className="fixed right-0 top-1/2 -translate-y-2/3 z-20 bg-[#FF0080] rounded-l-2xl w-24 h-24 flex items-center justify-center shadow-lg hover:scale-105 transition-transform overflow-visible"
         aria-label="Trofee"
         tabIndex={0}
       >
-        <Image
-          src="/images/trofee.png"
-          alt="Leaderboard"
-          width={180}
-          height={180}
-          className="object-contain -my-10"
-        />
-      </button>
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+          <Image
+            src="/images/trofee.png"
+            alt="Leaderboard"
+            width={100}
+            height={100}
+            className="object-contain -my-10"
+          />
+        </div>
+      </Link>
 
       {/* Titel */}
       <div className="z-10 text-center mb-20">
@@ -33,7 +37,7 @@ export default function Dashboard() {
       {/* Knoppen */}
       <div className="z-10 flex flex-col gap-4 w-full max-w-md items-center justify-center">
         <LoginStyleButton label="play" />
-        <div className="w-full max-w-xs ml-14">
+        <div className="w-full max-w-xs -mr-12">
           <LoginStyleButton label="profiel" leftArrow />
         </div>
         <LoginStyleButton label="handleiding" />
