@@ -1,5 +1,7 @@
 import Image from 'next/image';
 import LeaderboardRow from '@/components/LeaderboardRow';
+// Attempting to re-trigger module resolution
+
 import Link from 'next/link';
 
 const dummyData = [

@@ -1,15 +1,32 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { Poppins } from 'next/font/google';
+import Link from 'next/link';
 
-export default function LoginPage() {
+// Define font
+const pressStart2P = Poppins({
+  subsets: ['latin'],
+  weight: ['400']
+});
+
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+});
+
+const LoginPage = () => {
   const router = useRouter();
-  const [isHovered, setIsHovered] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    router.push('/dashboard');
+    // Handle login logic here
+    console.log('Username:', username);
+    console.log('Password:', password);
+    router.push('/dashboard'); // Redirect to dashboard on login
   };
 
   return (
@@ -52,8 +69,6 @@ export default function LoginPage() {
             <button
               type="submit"
               className="flex-1 h-14 bg-white rounded-[25px] overflow-hidden group flex items-center justify-center"
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
             >
               <span className="font-['Press_Start_2P'] text-black">Login</span>
             </button>
@@ -76,4 +91,6 @@ export default function LoginPage() {
       </div>
     </div>
   );
-} 
+}
+
+export default LoginPage; 
