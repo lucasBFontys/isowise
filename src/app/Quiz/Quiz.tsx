@@ -1,0 +1,275 @@
+import React, { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { Poppins } from 'next/font/google';
+
+// Define font
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+});
+
+// Define data structures
+interface Answer {
+  text: string;
+  isCorrect: boolean;
+}
+
+interface Question {
+  id: string;
+  questionText: string;
+  imageSrc?: string;
+  answers: Answer[];
+  timeLimit: number; // seconds
+  category: string;
+}
+
+// Sample Question Data (can be moved to a separate file later)
+const allQuestions: Question[] = [
+  {
+    id: 'q1',
+    questionText: 'Wat is het eerste stap in het risicobeheerproces volgens ISO 27001?',
+    imageSrc: '/images/risk-management.png', // Placeholder image
+    answers: [
+      { text: 'Risicobehandeling', isCorrect: false },
+      { text: 'Risico-identificatie', isCorrect: true },
+      { text: 'Risico-evaluatie', isCorrect: false },
+      { text: 'Risicocommunicatie', isCorrect: false },
+    ],
+    timeLimit: 15,
+    category: 'ISO 27001',
+  },
+  // Add more questions here
+];
+
+// Helper function to shuffle array
+const shuffleArray = (array: any[]) => {
+  let currentIndex = array.length, randomIndex;
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+  return array;
+};
+
+const Quiz = () => {
+  const router = useRouter();
+
+  // State
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [score, setScore] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [shuffledQuestions, setShuffledQuestions] = useState<Question[]>([]);
+  const [selectedAnswerIndex, setSelectedAnswerIndex] = useState<number | null>(null);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [pointsEarned, setPointsEarned] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(0);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const feedbackTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Effect to initialize questions and start first question
+  useEffect(() => {
+    // Select category and shuffle questions
+    const questionsForRound = allQuestions; // TODO: Implement category selection logic
+    setShuffledQuestions(shuffleArray([...questionsForRound]));
+
+    // Start first question timer after state is set
+    // This will be triggered by the startQuestion function which is called below
+
+    // Cleanup timeouts
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (feedbackTimeoutRef.current) clearTimeout(feedbackTimeoutRef.current);
+    };
+  }, []); // Empty dependency array means this runs once on mount
+
+  // Effect to start timer when shuffledQuestions is ready or currentQuestionIndex changes
+  useEffect(() => {
+    if (shuffledQuestions.length > 0) {
+      startQuestionTimer();
+    }
+  }, [currentQuestionIndex, shuffledQuestions]);
+
+
+  const startQuestionTimer = () => {
+     if (timerRef.current) clearInterval(timerRef.current);
+
+     const timeLimit = shuffledQuestions[currentQuestionIndex]?.timeLimit || 10; // Default to 10 seconds if not specified
+     setTimeLeft(timeLimit);
+
+     timerRef.current = setInterval(() => {
+       setTimeLeft(prevTime => {
+         if (prevTime <= 1) {
+           // Timer ended
+           clearInterval(timerRef.current!);
+           handleAnswer(null); // Treat as incorrect/timeout
+           return 0;
+         }
+         return prevTime - 1;
+       });
+     }, 1000);
+  };
+
+  const handleAnswer = (answerIndex: number | null) => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    if (selectedAnswerIndex !== null) return; // Prevent multiple clicks
+
+    setSelectedAnswerIndex(answerIndex);
+
+    const currentQuestion = shuffledQuestions[currentQuestionIndex];
+    const correct = answerIndex !== null && currentQuestion.answers[answerIndex].isCorrect;
+
+    setIsCorrect(correct);
+
+    let earned = 0;
+    if (correct) {
+      let multiplier = 1.0;
+      if (streak === 1) multiplier = 1.2;
+      if (streak >= 2) multiplier = 1.5; // Max multiplier
+      earned = Math.round(100 * multiplier);
+      setScore(prevScore => prevScore + earned);
+      setStreak(prevStreak => prevStreak + 1);
+    } else {
+      setStreak(0);
+      earned = 0;
+    }
+    setPointsEarned(earned);
+
+    setShowFeedback(true);
+
+    // Automatically move to the next question after a delay
+    feedbackTimeoutRef.current = setTimeout(() => {
+      setShowFeedback(false);
+      setSelectedAnswerIndex(null);
+      if (currentQuestionIndex < shuffledQuestions.length - 1) {
+        setCurrentQuestionIndex(prevIndex => prevIndex + 1);
+        // Timer for next question starts via useEffect
+      } else {
+        // End of quiz
+        console.log('Quiz finished! Final Score:', score);
+        // TODO: Handle end of quiz (e.g., show final score screen or navigate)
+      }
+    }, 2000); // 2 second delay
+  };
+
+  const handleBackClick = () => {
+    router.back();
+  };
+
+  const currentQuestion = shuffledQuestions[currentQuestionIndex];
+  const totalQuestions = shuffledQuestions.length;
+  const questionNumber = currentQuestionIndex + 1;
+  const progressWidth = (timeLeft / (currentQuestion?.timeLimit || 10)) * 100; // Calculate progress percentage
+
+  if (!currentQuestion) {
+    return <div>Loading quiz...</div>; // Or a loading spinner
+  }
+
+  return (
+    <div className={`flex flex-col items-center justify-center min-h-screen bg-[#220028] text-white p-6 ${poppins.className} relative`}>
+      {/* Back Arrow */}
+      <button
+        className="absolute top-6 left-6 text-white text-2xl z-20"
+        onClick={handleBackClick}
+        aria-label="Go back"
+      >
+        ← {/* Placeholder for back arrow icon */}
+      </button>
+
+      {/* Question Progress */}
+      <div className="absolute top-6 right-6 text-white text-xl font-bold z-20">
+        {questionNumber}/{totalQuestions}
+      </div>
+
+      {/* Question Content */}
+      <div className="flex flex-col items-center justify-center w-full max-w-2xl text-center mb-8 z-10">
+        <h1 className="text-2xl md:text-3xl font-bold mb-6">
+          {currentQuestion.questionText}
+        </h1>
+        {currentQuestion.imageSrc && (
+          <div className="mb-6 rounded-lg overflow-hidden shadow-lg">
+             {/* Placeholder image with aspect ratio */} 
+             <div className="relative w-full" style={{ paddingBottom: '56.25%' /* 16:9 Aspect Ratio */ }}>
+                <Image
+                   src={currentQuestion.imageSrc}
+                   alt="Question related image"
+                   layout="fill"
+                   objectFit="cover"
+                />
+             </div>
+          </div>
+        )}
+      </div>
+
+      {/* Time Progress Bar */}
+      <div className="w-full max-w-2xl h-3 bg-gray-300 rounded-full overflow-hidden mb-8 z-10">
+        <div
+          className="h-full bg-pink-500 transition-all duration-1000 ease-linear"
+          style={{ width: `${progressWidth}%` }}
+        >
+        </div>
+      </div>
+
+      {/* Answers Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl z-10">
+        {currentQuestion.answers.map((answer, index) => (
+          <button
+            key={index}
+            className={`
+              flex items-center p-6 rounded-xl shadow-lg text-left font-bold text-black
+              ${selectedAnswerIndex !== null
+                ? answer.isCorrect
+                  ? 'bg-green-400' // Correct answer after selection
+                  : selectedAnswerIndex === index
+                    ? 'bg-red-400' // Incorrect selected answer
+                    : 'bg-white opacity-70' // Unselected answers
+                : 'bg-white hover:bg-gray-200' // Before selection
+              }
+            `}
+            onClick={() => handleAnswer(index)}
+            disabled={selectedAnswerIndex !== null}
+            aria-label={`Answer: ${answer.text}`}
+          >
+            {/* Icon Placeholder */}
+            <div className="mr-4 text-2xl">
+              {index === 0 && '+'}
+              {index === 1 && '□'}
+              {index === 2 && '✕'}
+              {index === 3 && '◆'}
+            </div>
+            <span>{answer.text}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Feedback Overlay */}
+      {showFeedback && (
+        <div className={`
+          absolute inset-0 flex flex-col items-center justify-center z-50
+          ${isCorrect ? 'bg-green-600 bg-opacity-75' : 'bg-red-600 bg-opacity-75'}
+        `}>
+          <div className={`text-white text-6xl md:text-8xl font-bold mb-4 ${isCorrect ? '' : ''}`}> {/* Add pixel font here later */}
+            {isCorrect ? 'Goed' : 'Fout'}
+          </div>
+          <div className={`text-white text-4xl md:text-6xl ${isCorrect ? '' : ''}`}> {/* Add pixel font here later */}
+             {isCorrect ? `+${pointsEarned}` : '0'}
+             {isCorrect && (
+                 <Image
+                     src="/images/coin.png" // Placeholder for coin icon
+                     alt="Coin icon"
+                     width={40}
+                     height={40}
+                     className="inline-block ml-2"
+                 />
+             )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Quiz; 

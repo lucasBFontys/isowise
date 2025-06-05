@@ -36,7 +36,9 @@ export default function Dashboard() {
 
       {/* Knoppen */}
       <div className="z-10 flex flex-col gap-4 w-full max-w-md items-center justify-center">
-        <LoginStyleButton label="play" />
+        <Link href="/Quiz">
+          <LoginStyleButton label="play"  />
+        </Link>
         <div className="w-full max-w-xs -mr-12">
           <LoginStyleButton label="profiel" leftArrow />
         </div>

@@ -27,20 +27,20 @@ const LeaderboardRow = ({ rank, name, streak, punten, highlight }: LeaderboardRo
   const displayStreak = streak !== null ? streak : 0;
 
   return (
-    <div className={`flex items-center gap-4 mb-4 last:mb-0 relative h-20 ${rowContainerClass}`}>
+    <div className={`flex items-center gap-4 mb-4 last:mb-0 relative h-16 ${rowContainerClass}`}>
       {/* Kroon (gepositioneerd boven rank blok) */}
       {rank === 1 && (
         <Image
           src="/images/kroontje.png"
           alt="Kroon"
-          width={40}
-          height={40}
-          className="absolute top-0 left-0 transform -translate-x-1/4 -translate-y-1/4 object-contain z-10"
+          width={100}
+          height={100}
+          className="absolute -top-13 -left-11 object-contain z-10"
         />
       )}
 
       {/* Rank Block */}
-      <div className={`${rankBlockClass} ${rankTextColor} flex flex-col items-center justify-center px-4 flex-grow-0 flex-shrink-0 rounded-md font-bold text-lg text-center h-full`}>
+      <div className={`${rankBlockClass} ${rankTextColor} flex flex-col items-center justify-center w-16 flex-grow-0 flex-shrink-0 rounded-md font-bold text-lg text-center h-full`}>
         <span>{rank}</span>
       </div>
 
@@ -51,31 +51,28 @@ const LeaderboardRow = ({ rank, name, streak, punten, highlight }: LeaderboardRo
           <span className={highlight || rank === 1 ? 'font-bold' : ''}>{name}</span>
         </div>
 
-        {/* Streak en Punten */}
-        <div className="flex items-center gap-8">
-          {/* Streak */}
-          <div className="flex items-center justify-center">
-            {/* Container voor vuur icoon en nummer */}
-            <div className="relative flex items-center justify-center">
-              <Image
-                src={fireIconSrc}
-                alt="Streak icoon"
-                width={24}
-                height={24}
-                className="object-contain"
-              />
-              {displayStreak > 0 && (
-                <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-black">
-                  {displayStreak}
-                </span>
-              )}
-            </div>
+        {/* Streak */}
+        <div className="flex flex-col items-center justify-center w-24">
+          {/* Container voor vuur icoon en nummer */}
+          <div className="flex flex-col items-center justify-center">
+            <Image
+              src={fireIconSrc}
+              alt="Streak icoon"
+              width={24}
+              height={24}
+              className="object-contain"
+            />
+            {displayStreak > 0 && (
+              <span className="text-xs font-bold text-black">
+                {displayStreak}
+              </span>
+            )}
           </div>
+        </div>
 
-          {/* Punten */}
-          <div className="text-right">
-            <span className={highlight || rank === 1 ? 'font-bold' : ''}>{punten}</span>
-          </div>
+        {/* Punten */}
+        <div className="text-right w-20">
+          <span className={highlight || rank === 1 ? 'font-bold' : ''}>{punten}</span>
         </div>
       </div>
     </div>
