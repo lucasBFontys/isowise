@@ -5,6 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { Poppins } from 'next/font/google';
+import { useRouter } from 'next/navigation';
+import CategorySelect from '@/components/CategorySelect';
 
 const poppins = Poppins({
   weight: '400',
@@ -13,6 +15,8 @@ const poppins = Poppins({
 
 export default function Dashboard() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [showCategorySelect, setShowCategorySelect] = useState(false);
+  const router = useRouter();
 
   const handleProfileClick = () => {
     setIsProfileOpen(true);
@@ -21,6 +25,19 @@ export default function Dashboard() {
   const handleCloseProfile = () => {
     setIsProfileOpen(false);
   };
+
+  const handlePlayClick = () => {
+    setShowCategorySelect(true);
+  };
+
+  const handleCategorySelected = (categoryId: string) => {
+    // Navigate to the quiz page with the selected category
+    router.push(`/Quiz?category=${categoryId}`);
+  };
+
+  if (showCategorySelect) {
+    return <CategorySelect onCategorySelect={handleCategorySelected} />;
+  }
 
   return (
     <div className="min-h-screen bg-[#220028] flex flex-col items-center justify-center relative overflow-hidden">
@@ -56,9 +73,8 @@ export default function Dashboard() {
       {/* Knoppen */}
       <div className="z-10 flex flex-col gap-4 w-full max-w-md items-center justify-center">
         <div className="w-full max-w-xs">
-          <Link href="/Quiz">
-            <LoginStyleButton label="play" />
-          </Link>
+          {/* Changed from Link to a button to show CategorySelect */} 
+          <LoginStyleButton label="play" onClick={handlePlayClick} />
         </div>
         <div className="w-full max-w-xs -mr-12">
           <LoginStyleButton label="profiel" leftArrow onClick={handleProfileClick} />
