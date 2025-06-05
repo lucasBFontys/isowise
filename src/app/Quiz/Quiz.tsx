@@ -43,14 +43,20 @@ const allQuestions: Question[] = [
 ];
 
 // Helper function to shuffle array
-const shuffleArray = (array: any[]) => {
-  let currentIndex = array.length, randomIndex;
+const shuffleArray = (array: Question[]): Question[] => {
+  let currentIndex = array.length;
+  let randomIndex: number;
+  
   while (currentIndex !== 0) {
     randomIndex = Math.floor(Math.random() * currentIndex);
     currentIndex--;
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex], array[currentIndex]];
+    
+    // Swap elements with proper typing
+    const temp: Question = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temp;
   }
+  
   return array;
 };
 
@@ -70,14 +76,30 @@ const Quiz = () => {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const feedbackTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  const startQuestionTimer = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+
+    const timeLimit = shuffledQuestions[currentQuestionIndex]?.timeLimit || 10; // Default to 10 seconds if not specified
+    setTimeLeft(timeLimit);
+
+    timerRef.current = setInterval(() => {
+      setTimeLeft(prevTime => {
+        if (prevTime <= 1) {
+          // Timer ended
+          clearInterval(timerRef.current!);
+          handleAnswer(null); // Treat as incorrect/timeout
+          return 0;
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
+  };
+
   // Effect to initialize questions and start first question
   useEffect(() => {
     // Select category and shuffle questions
     const questionsForRound = allQuestions; // TODO: Implement category selection logic
     setShuffledQuestions(shuffleArray([...questionsForRound]));
-
-    // Start first question timer after state is set
-    // This will be triggered by the startQuestion function which is called below
 
     // Cleanup timeouts
     return () => {
@@ -91,27 +113,7 @@ const Quiz = () => {
     if (shuffledQuestions.length > 0) {
       startQuestionTimer();
     }
-  }, [currentQuestionIndex, shuffledQuestions]);
-
-
-  const startQuestionTimer = () => {
-     if (timerRef.current) clearInterval(timerRef.current);
-
-     const timeLimit = shuffledQuestions[currentQuestionIndex]?.timeLimit || 10; // Default to 10 seconds if not specified
-     setTimeLeft(timeLimit);
-
-     timerRef.current = setInterval(() => {
-       setTimeLeft(prevTime => {
-         if (prevTime <= 1) {
-           // Timer ended
-           clearInterval(timerRef.current!);
-           handleAnswer(null); // Treat as incorrect/timeout
-           return 0;
-         }
-         return prevTime - 1;
-       });
-     }, 1000);
-  };
+  }, [currentQuestionIndex, shuffledQuestions, startQuestionTimer]);
 
   const handleAnswer = (answerIndex: number | null) => {
     if (timerRef.current) clearInterval(timerRef.current);

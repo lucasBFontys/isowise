@@ -145,9 +145,6 @@ const Quiz = () => {
     const questionsForRound = allQuestions; // TODO: Implement category selection logic
     setShuffledQuestions(shuffleArray([...questionsForRound]));
 
-    // Start first question timer after state is set
-    // This will be triggered by the startQuestion function which is called below
-
     // Cleanup timeouts
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
