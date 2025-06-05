@@ -111,7 +111,6 @@ const Quiz = () => {
       setSelectedAnswerIndex(null);
       if (currentQuestionIndex < shuffledQuestions.length - 1) {
         setCurrentQuestionIndex(prevIndex => prevIndex + 1);
-        // Timer for next question starts via useEffect
       } else {
         // End of quiz
         console.log('Quiz finished! Final Score:', score);
@@ -123,15 +122,17 @@ const Quiz = () => {
   const startQuestionTimer = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
 
-    const timeLimit = shuffledQuestions[currentQuestionIndex]?.timeLimit || 10; // Default to 10 seconds if not specified
+    const timeLimit = shuffledQuestions[currentQuestionIndex]?.timeLimit || 10;
     setTimeLeft(timeLimit);
 
     timerRef.current = setInterval(() => {
       setTimeLeft(prevTime => {
         if (prevTime <= 1) {
-          // Timer ended
-          clearInterval(timerRef.current!);
-          handleAnswer(null); // Treat as incorrect/timeout
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+          }
+          handleAnswer(null);
           return 0;
         }
         return prevTime - 1;
@@ -139,25 +140,29 @@ const Quiz = () => {
     }, 1000);
   }, [currentQuestionIndex, shuffledQuestions, handleAnswer]);
 
-  // Effect to initialize questions and start first question
+  // Effect to initialize questions
   useEffect(() => {
-    // Select category and shuffle questions
-    const questionsForRound = allQuestions; // TODO: Implement category selection logic
+    const questionsForRound = allQuestions;
     setShuffledQuestions(shuffleArray([...questionsForRound]));
 
-    // Cleanup timeouts
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-      if (feedbackTimeoutRef.current) clearTimeout(feedbackTimeoutRef.current);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      if (feedbackTimeoutRef.current) {
+        clearTimeout(feedbackTimeoutRef.current);
+        feedbackTimeoutRef.current = null;
+      }
     };
-  }, []); // Empty dependency array means this runs once on mount
+  }, []);
 
-  // Effect to start timer when shuffledQuestions is ready or currentQuestionIndex changes
+  // Effect to start timer when question changes
   useEffect(() => {
-    if (shuffledQuestions.length > 0) {
+    if (shuffledQuestions.length > 0 && !showFeedback) {
       startQuestionTimer();
     }
-  }, [currentQuestionIndex, shuffledQuestions, startQuestionTimer]);
+  }, [currentQuestionIndex, shuffledQuestions, startQuestionTimer, showFeedback]);
 
   const handleBackClick = () => {
     router.back();

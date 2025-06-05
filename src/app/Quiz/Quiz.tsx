@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Poppins } from 'next/font/google';
@@ -76,46 +76,7 @@ const Quiz = () => {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const feedbackTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const startQuestionTimer = () => {
-    if (timerRef.current) clearInterval(timerRef.current);
-
-    const timeLimit = shuffledQuestions[currentQuestionIndex]?.timeLimit || 10; // Default to 10 seconds if not specified
-    setTimeLeft(timeLimit);
-
-    timerRef.current = setInterval(() => {
-      setTimeLeft(prevTime => {
-        if (prevTime <= 1) {
-          // Timer ended
-          clearInterval(timerRef.current!);
-          handleAnswer(null); // Treat as incorrect/timeout
-          return 0;
-        }
-        return prevTime - 1;
-      });
-    }, 1000);
-  };
-
-  // Effect to initialize questions and start first question
-  useEffect(() => {
-    // Select category and shuffle questions
-    const questionsForRound = allQuestions; // TODO: Implement category selection logic
-    setShuffledQuestions(shuffleArray([...questionsForRound]));
-
-    // Cleanup timeouts
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-      if (feedbackTimeoutRef.current) clearTimeout(feedbackTimeoutRef.current);
-    };
-  }, []); // Empty dependency array means this runs once on mount
-
-  // Effect to start timer when shuffledQuestions is ready or currentQuestionIndex changes
-  useEffect(() => {
-    if (shuffledQuestions.length > 0) {
-      startQuestionTimer();
-    }
-  }, [currentQuestionIndex, shuffledQuestions, startQuestionTimer]);
-
-  const handleAnswer = (answerIndex: number | null) => {
+  const handleAnswer = useCallback((answerIndex: number | null) => {
     if (timerRef.current) clearInterval(timerRef.current);
     if (selectedAnswerIndex !== null) return; // Prevent multiple clicks
 
@@ -148,14 +109,58 @@ const Quiz = () => {
       setSelectedAnswerIndex(null);
       if (currentQuestionIndex < shuffledQuestions.length - 1) {
         setCurrentQuestionIndex(prevIndex => prevIndex + 1);
-        // Timer for next question starts via useEffect
       } else {
         // End of quiz
         console.log('Quiz finished! Final Score:', score);
         // TODO: Handle end of quiz (e.g., show final score screen or navigate)
       }
     }, 2000); // 2 second delay
-  };
+  }, [currentQuestionIndex, shuffledQuestions, selectedAnswerIndex, streak, score]);
+
+  const startQuestionTimer = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+
+    const timeLimit = shuffledQuestions[currentQuestionIndex]?.timeLimit || 10;
+    setTimeLeft(timeLimit);
+
+    timerRef.current = setInterval(() => {
+      setTimeLeft(prevTime => {
+        if (prevTime <= 1) {
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+          }
+          handleAnswer(null);
+          return 0;
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
+  }, [currentQuestionIndex, shuffledQuestions, handleAnswer]);
+
+  // Effect to initialize questions
+  useEffect(() => {
+    const questionsForRound = allQuestions;
+    setShuffledQuestions(shuffleArray([...questionsForRound]));
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      if (feedbackTimeoutRef.current) {
+        clearTimeout(feedbackTimeoutRef.current);
+        feedbackTimeoutRef.current = null;
+      }
+    };
+  }, []);
+
+  // Effect to start timer when question changes
+  useEffect(() => {
+    if (shuffledQuestions.length > 0 && !showFeedback) {
+      startQuestionTimer();
+    }
+  }, [currentQuestionIndex, shuffledQuestions, startQuestionTimer, showFeedback]);
 
   const handleBackClick = () => {
     router.back();
