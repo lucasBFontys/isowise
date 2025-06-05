@@ -200,13 +200,13 @@ const Quiz = () => {
         </h1>
         {currentQuestion.imageSrc && (
           <div className="mb-6 rounded-lg overflow-hidden shadow-lg">
-             {/* Placeholder image with aspect ratio */} 
              <div className="relative w-full" style={{ paddingBottom: '56.25%' /* 16:9 Aspect Ratio */ }}>
                 <Image
                    src={currentQuestion.imageSrc}
                    alt="Question related image"
-                   layout="fill"
-                   objectFit="cover"
+                   fill
+                   className="object-cover"
+                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
              </div>
           </div>
@@ -267,11 +267,12 @@ const Quiz = () => {
              {isCorrect ? `+${pointsEarned}` : '0'}
              {isCorrect && (
                  <Image
-                     src="/images/coin.png" // Placeholder for coin icon
+                     src="/images/coin.png"
                      alt="Coin icon"
                      width={40}
                      height={40}
                      className="inline-block ml-2"
+                     priority
                  />
              )}
           </div>
