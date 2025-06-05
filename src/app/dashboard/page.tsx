@@ -78,20 +78,23 @@ export default function Dashboard() {
           <button onClick={handleCloseProfile} className="self-start text-white text-2xl mb-4" aria-label="Close profile">←</button>
 
           {/* Profile Picture and Edit Icon */}
-          <div className="relative w-60 h-40 rounded-xl overflow-hidden mb-4 bg-roze">
+          <div className="relative w-95 h-50 rounded-xl overflow-hidden mb-4 bg-roze">
+            <div className="flex mt-7 justify-center">
             <Image
               src="/images/profiel-foto.png" // Placeholder for pixel avatar
               alt="Profile picture"
-              layout="fill"
-              objectFit="cover"
+              width={180}
+              height={180}
+              
             />
+            </div>
             {/* Edit Icon */}
             <div className="absolute top-2 right-2  bg-opacity-50 rounded-full p-1">
               <Image
                 src="/images/pencil.png" // Placeholder for pixel pencil icon
                 alt="Edit profile"
-                width={20}
-                height={20}
+                width={50}
+                height={50}
               />
             </div>
           </div>
