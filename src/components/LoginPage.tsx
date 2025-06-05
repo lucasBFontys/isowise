@@ -50,6 +50,8 @@ const LoginPage = () => {
             <label className="block text-sm text-white font-['Poppins']">gebruikersnaam</label>
             <input
               type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               className="w-full px-4 py-3 bg-[#d1cccc] rounded-[10px] focus:outline-none focus:ring-2 focus:ring-[#FF0080]"
               placeholder="Voer uw gebruikersnaam in"
             />
@@ -59,6 +61,8 @@ const LoginPage = () => {
             <label className="block text-sm text-white font-['Poppins']">wachtwoord</label>
             <input
               type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-3 bg-[#d1cccc] rounded-[10px] focus:outline-none focus:ring-2 focus:ring-[#FF0080]"
               placeholder="Voer uw wachtwoord in"
             />

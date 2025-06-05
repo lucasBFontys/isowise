@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Poppins } from 'next/font/google';
@@ -45,14 +45,20 @@ const allQuestions: Question[] = [
 ];
 
 // Helper function to shuffle array
-const shuffleArray = <T>(array: T[]): T[] => {
-  let currentIndex = array.length, randomIndex;
+const shuffleArray = (array: Question[]): Question[] => {
+  let currentIndex = array.length;
+  let randomIndex: number;
+  
   while (currentIndex !== 0) {
     randomIndex = Math.floor(Math.random() * currentIndex);
     currentIndex--;
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex], array[currentIndex]];
+    
+    // Swap elements with proper typing
+    const temp: Question = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temp;
   }
+  
   return array;
 };
 
@@ -72,50 +78,7 @@ const Quiz = () => {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const feedbackTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Effect to initialize questions and start first question
-  useEffect(() => {
-    // Select category and shuffle questions
-    const questionsForRound = allQuestions; // TODO: Implement category selection logic
-    setShuffledQuestions(shuffleArray([...questionsForRound]));
-
-    // Start first question timer after state is set
-    // This will be triggered by the startQuestion function which is called below
-
-    // Cleanup timeouts
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-      if (feedbackTimeoutRef.current) clearTimeout(feedbackTimeoutRef.current);
-    };
-  }, []); // Empty dependency array means this runs once on mount
-
-  // Effect to start timer when shuffledQuestions is ready or currentQuestionIndex changes
-  useEffect(() => {
-    if (shuffledQuestions.length > 0) {
-      startQuestionTimer();
-    }
-  }, [currentQuestionIndex, shuffledQuestions, startQuestionTimer]);
-
-
-  const startQuestionTimer = () => {
-     if (timerRef.current) clearInterval(timerRef.current);
-
-     const timeLimit = shuffledQuestions[currentQuestionIndex]?.timeLimit || 10; // Default to 10 seconds if not specified
-     setTimeLeft(timeLimit);
-
-     timerRef.current = setInterval(() => {
-       setTimeLeft(prevTime => {
-         if (prevTime <= 1) {
-           // Timer ended
-           clearInterval(timerRef.current!);
-           handleAnswer(null); // Treat as incorrect/timeout
-           return 0;
-         }
-         return prevTime - 1;
-       });
-     }, 1000);
-  };
-
-  const handleAnswer = (answerIndex: number | null) => {
+  const handleAnswer = useCallback((answerIndex: number | null) => {
     if (timerRef.current) clearInterval(timerRef.current);
     if (selectedAnswerIndex !== null) return; // Prevent multiple clicks
 
@@ -155,7 +118,49 @@ const Quiz = () => {
         // TODO: Handle end of quiz (e.g., show final score screen or navigate)
       }
     }, 2000); // 2 second delay
-  };
+  }, [currentQuestionIndex, shuffledQuestions, selectedAnswerIndex, streak, score]);
+
+  const startQuestionTimer = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+
+    const timeLimit = shuffledQuestions[currentQuestionIndex]?.timeLimit || 10; // Default to 10 seconds if not specified
+    setTimeLeft(timeLimit);
+
+    timerRef.current = setInterval(() => {
+      setTimeLeft(prevTime => {
+        if (prevTime <= 1) {
+          // Timer ended
+          clearInterval(timerRef.current!);
+          handleAnswer(null); // Treat as incorrect/timeout
+          return 0;
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
+  }, [currentQuestionIndex, shuffledQuestions, handleAnswer]);
+
+  // Effect to initialize questions and start first question
+  useEffect(() => {
+    // Select category and shuffle questions
+    const questionsForRound = allQuestions; // TODO: Implement category selection logic
+    setShuffledQuestions(shuffleArray([...questionsForRound]));
+
+    // Start first question timer after state is set
+    // This will be triggered by the startQuestion function which is called below
+
+    // Cleanup timeouts
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (feedbackTimeoutRef.current) clearTimeout(feedbackTimeoutRef.current);
+    };
+  }, []); // Empty dependency array means this runs once on mount
+
+  // Effect to start timer when shuffledQuestions is ready or currentQuestionIndex changes
+  useEffect(() => {
+    if (shuffledQuestions.length > 0) {
+      startQuestionTimer();
+    }
+  }, [currentQuestionIndex, shuffledQuestions, startQuestionTimer]);
 
   const handleBackClick = () => {
     router.back();
