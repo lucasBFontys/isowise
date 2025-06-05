@@ -45,7 +45,7 @@ const allQuestions: Question[] = [
 ];
 
 // Helper function to shuffle array
-const shuffleArray = (array: any[]) => {
+const shuffleArray = <T>(array: T[]): T[] => {
   let currentIndex = array.length, randomIndex;
   while (currentIndex !== 0) {
     randomIndex = Math.floor(Math.random() * currentIndex);
@@ -93,7 +93,7 @@ const Quiz = () => {
     if (shuffledQuestions.length > 0) {
       startQuestionTimer();
     }
-  }, [currentQuestionIndex, shuffledQuestions]);
+  }, [currentQuestionIndex, shuffledQuestions, startQuestionTimer]);
 
 
   const startQuestionTimer = () => {
