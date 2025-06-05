@@ -7,7 +7,7 @@ type LoginStyleButtonProps = {
 };
 
 const LoginStyleButton = ({ label, onClick, leftArrow = false }: LoginStyleButtonProps) => (
-  <div className="flex w-full max-w-sm mx-auto">
+  <div className="flex w-full max-w-md mx-auto">
     {leftArrow && (
       <button
         type="button"

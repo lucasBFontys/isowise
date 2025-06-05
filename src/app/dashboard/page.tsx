@@ -15,13 +15,13 @@ export default function Dashboard() {
         aria-label="Trofee"
         tabIndex={0}
       >
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+        <div className="pointer-events-none flex items-center justify-center h-full w-full">
           <Image
             src="/images/trofee.png"
             alt="Leaderboard"
-            width={100}
-            height={100}
-            className="object-contain -my-10"
+            width={120}
+            height={120}
+            className="object-contain"
           />
         </div>
       </Link>
@@ -36,13 +36,17 @@ export default function Dashboard() {
 
       {/* Knoppen */}
       <div className="z-10 flex flex-col gap-4 w-full max-w-md items-center justify-center">
+        <div className="w-full max-w-xs">
         <Link href="/Quiz">
-          <LoginStyleButton label="play"  />
+          <LoginStyleButton label="play" />
         </Link>
+        </div>
         <div className="w-full max-w-xs -mr-12">
           <LoginStyleButton label="profiel" leftArrow />
         </div>
-        <LoginStyleButton label="handleiding" />
+        <div className="w-full max-w-xs">
+          <LoginStyleButton label="handleiding" />
+        </div>
       </div>
     </div>
   );
