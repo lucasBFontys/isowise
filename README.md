@@ -1,36 +1,86 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ISOwise - Interactive ISO Standards Learning Platform
 
-## Getting Started
+## Overview
+ISOwise is an interactive web application designed to help users learn and test their knowledge of ISO standards through engaging quizzes. The platform features a modern, user-friendly interface with real-time feedback, scoring system, and progress tracking. Built with Next.js and Tailwind CSS, it provides a seamless learning experience across all devices.
 
-First, run the development server:
+## Key Features
+- **Interactive Quizzes**: Dynamic question presentation with immediate feedback
+- **Real-time Scoring**: Points system with multipliers for correct answer streaks
+- **Progress Tracking**: Monitor your learning journey and improvement
+- **Responsive Design**: Optimized for both desktop and mobile devices
+- **Modern UI/UX**: Clean, intuitive interface with smooth animations
+- **Accessibility**: Built with accessibility in mind, following WCAG guidelines
 
+## Technology Stack
+### Frontend
+- Next.js 14
+- TypeScript
+- Tailwind CSS
+- Framer Motion (for animations)
+- Google Fonts (Poppins, Press Start 2P)
+
+### Development Tools
+- Visual Studio Code
+- Git & GitHub
+- Vercel (Deployment)
+- NPM
+
+## Installation
+
+### Prerequisites
+Ensure you have the following installed:
+- Node.js (LTS version)
+- npm
+
+### Steps
+1. Clone the repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/yourusername/isowise.git
+cd isowise
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Start the development server
+```bash
+npm run dev
+```
+Open your browser at http://localhost:3000
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Configuration
+- Environment variables can be added in `.env.local` if needed
+- Next.js configuration can be modified in `next.config.mjs`
+- Tailwind configuration is in `tailwind.config.ts`
 
-## Learn More
+## Project Structure
+```
+src/
+├── app/              # Next.js app directory
+├── components/       # Reusable React components
+├── lib/             # Utility functions and helpers
+├── types/           # TypeScript type definitions
+└── styles/          # Global styles and Tailwind config
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Available Scripts
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm start` | Start production server |
+| `npm run lint` | Run ESLint |
+| `npm run type-check` | Run TypeScript type checking |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Contributing
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Acknowledgments
+- Next.js team for the amazing framework
+- Tailwind CSS for the utility-first CSS framework
+- All contributors who have helped shape this project
