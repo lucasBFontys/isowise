@@ -15,8 +15,25 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "ISOwise Login",
-  description: "ISOwise Login Page",
+  title: "ISOwise",
+  description: "ISOwise - Learn ISO standards through interactive quizzes",
+  icons: {
+    icon: [
+      {
+        url: '/favicon.ico',
+        sizes: 'any',
+      },
+      {
+        url: '/icon.png',
+        type: 'image/png',
+        sizes: '32x32',
+      },
+    ],
+    apple: {
+      url: '/apple-icon.png',
+      sizes: '180x180',
+    },
+  },
 };
 
 export default function RootLayout({
