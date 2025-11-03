@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import Confetti from 'react-confetti';
@@ -76,7 +76,7 @@ const cloudVariants = {
 const CategorySelect = ({ onCategorySelect }: CategorySelectProps) => {
   const [animationPhase, setAnimationPhase] = useState('initial'); // initial, gathering, selecting, selected
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
-  const [categories, setCategories] = useState<Category[]>(allCategories); // Use allCategories initially
+  const [categories] = useState<Category[]>(allCategories); // Use allCategories initially
   const [showConfetti, setShowConfetti] = useState(false);
   const [windowDimensions, setWindowDimensions] = useState({ width: 0, height: 0 });
 
@@ -126,7 +126,7 @@ const CategorySelect = ({ onCategorySelect }: CategorySelectProps) => {
     // Cleanup the initial animation delay timeout
     return () => clearTimeout(startAnimation);
 
-  }, [allCategories]); // Dependency array includes allCategories to re-run if categories change
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#220028] flex flex-col items-center justify-center relative overflow-hidden p-4">
