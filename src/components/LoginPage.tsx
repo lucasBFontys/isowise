@@ -3,19 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Poppins } from 'next/font/google';
-import Link from 'next/link';
 
-// Define font
-const pressStart2P = Poppins({
-  subsets: ['latin'],
-  weight: ['400']
-});
-
-const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['400', '700'],
-});
 
 const LoginPage = () => {
   const router = useRouter();
