@@ -1,3 +1,6 @@
+// FIX: wrap startQuestionTimer in useCallback en voeg toe aan deps
+// FIX: gebruik expliciete types i.p.v. any (bijv. number | null, NodeJS.Timeout)
+// FIX: voeg startQuestionTimer toe aan useEffect dependency array
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';

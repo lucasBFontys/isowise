@@ -1,4 +1,6 @@
 'use client';
+// FIX: verwijder ongebruikte imports (bijv. Link) en ongebruikte font-consts
+// FIX: verwijder ongebruikte variabelen of gebruik _/lege destructuratie
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';

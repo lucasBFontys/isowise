@@ -1,4 +1,7 @@
 'use client';
+// FIX: verwijder ongebruikte imports (useRef, useCallback)
+// FIX: verwijder ongebruikte setCategories; gebruik alleen [categories]
+// FIX: verwijder allCategories uit useEffect deps (const verandert niet)
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
